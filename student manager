@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Grade Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #4b2007;
+      color:#cb9c5e;
+    }
+    h1 {
+      text-align: center;
+    }
+    input, select {
+      margin: 5px 0;
+      padding: 8px;
+      width: 10%;
+      background-color:#cb9c5e;
+      color:#4b2007;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      background: #cb9c5e;
+      color: #4b2007;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #b4813e;
+    }
+    .student-card {
+      background: #cb9c5e;
+      color: #4b2007;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(84, 45, 5, 0.792);
+    }
+    input::placeholder {
+      color: #4b2007;
+    }
+
+  </style>
+</head>
+<body>
+  <div style="position: absolute; top: 10px; right: 20px; font-weight: bold;">
+    By: Osama
+  </div>
+  
+  <h1>Student Grade Manager</h1>
+
+  <div>
+    <h2>Add Student</h2>
+   
+    <input type="text" id="name" placeholder="Name" color="#4b2007" />
+   
+    <input type="number" id="age" placeholder="Age" min="1" max="100" color="#4b2007"  />
+
+  
+    <select id="gender">
+      <option value="" disabled selected>Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <select id="department">
+      <option value="" disabled selected>Select Department</option>
+      <option value="IT">IT</option>
+      <option value="CS">CS</option>
+    </select>
+
+      <select id="year_of_study">
+        <option value="" disabled selected>Select Year of Study</option>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+      </select>
+
+
+    <h3>Enter Marks</h3>
+    <div id="marks">
+      <input type="number" class="mark" placeholder="Subject 1"{ color="#4b2007"} />
+
+      <input type="number" class="mark" placeholder="Subject 2"{ color="#4b2007"}/>
+
+      <input type="number" class="mark" placeholder="Subject 3" { color="#4b2007"} />
+ 
+      <input type="number" class="mark" placeholder="Subject 4" { color="#4b2007"} />
+
+      <input type="number" class="mark" placeholder="Subject 5" { color="#4b2007"}/>
+
+      <input type="number" class="mark" placeholder="Subject 6"{ color="#4b2007"} />
+
+      <input type="number" class="mark" placeholder="Subject 7" { color="#4b2007"} />
+   
+
+    <button onclick="addStudent()">Add Student</button>
+  </div>
+
+  <div>
+    <h2>Search Student</h2>
+   
+    <input type="text" id="searchName" placeholder="Enter name to search" />
+    <button onclick="searchStudent()">Search</button>
+    <div id="searchResult"></div>
+  </div>
+
+  <div>
+    <h2>All Students</h2>
+    <div id="studentList"></div>
+  </div>
+
+  <script>
+    let students = [];
+
+    function calculateGrade(avg) {
+      if (avg === 100) return "+A";
+      else if (avg >= 90) return "A";
+      else if (avg >= 85) return "+B";
+      else if (avg >= 80) return "B";
+      else if (avg >= 75) return "+C";
+      else if (avg >= 70) return "C";
+      else if (avg >= 65) return "+D";
+      else if (avg >= 60) return "D";
+      else if (avg >= 55) return "+E";
+      else if (avg >= 50) return "E";
+      else return "F";
+    }
+
+    function addStudent() {
+      const name = document.getElementById("name").value;
+      const age = parseInt(document.getElementById("age").value);
+      const gender = document.getElementById("gender").value;
+      const department = document.getElementById("department").value;
+      const year_of_study = document.getElementById("year_of_study").value;
+      const marks = [...document.getElementsByClassName("mark")].map(input => parseFloat(input.value));
+
+      if (marks.length !== 7 || marks.some(isNaN)) {
+        alert("Please enter all 7 marks.");
+        return;
+      }
+
+      const total = marks.reduce((sum, mark) => sum + mark, 0);
+      const avg = total / 7;
+      const grade = calculateGrade(avg);
+
+      const student = { name, age, gender, department, year_of_study, marks, avg, grade };
+      students.push(student);
+      displayStudents();
+      clearForm();
+    }
+
+    function displayStudents() {
+      const list = document.getElementById("studentList");
+      list.innerHTML = "";
+      if (students.length === 0) {
+        list.innerHTML = "<p>No student records available.</p>";
+        return;
+      }
+      students.forEach(s => {
+        list.innerHTML += `
+          <div class="student-card">
+            <strong>Name:</strong> ${s.name}<br>
+            <strong>Age:</strong> ${s.age}<br>
+            <strong>Gender:</strong> ${s.gender}<br>
+            <strong>Department:</strong> ${s.department}<br>
+            <strong>Year of Study:</strong> ${s.year_of_study}<br>
+            <strong>Average:</strong> ${s.avg.toFixed(2)}<br>
+            <strong>Grade:</strong> ${s.grade}
+          </div>
+        `;
+      });
+    }
+
+    function searchStudent() {
+      const name = document.getElementById("searchName").value.trim().toLowerCase();
+      const result = document.getElementById("searchResult");
+      result.innerHTML = "";
+
+      const student = students.find(s => s.name.toLowerCase() === name);
+      if (!student) {
+        result.innerHTML = "<p>Student not found.</p>";
+      } else {
+        result.innerHTML = `
+          <div class="student-card">
+            <strong>Name:</strong> ${student.name}<br>
+            <strong>Age:</strong> ${student.age}<br>
+            <strong>Gender:</strong> ${student.gender}<br>
+            <strong>Department:</strong> ${student.department}<br>
+            <strong>Year of Study:</strong> ${student.year_of_study}<br>
+            <strong>Average:</strong> ${student.avg.toFixed(2)}<br>
+            <strong>Grade:</strong> ${student.grade}
+          </div>
+        `;
+      }
+    }
+
+    function clearForm() {
+      document.getElementById("name").value = "";
+      document.getElementById("age").value = "";
+      document.getElementById("gender").value = "";
+      document.getElementById("department").value = "";
+      document.getElementById("year_of_study").value = "";
+      document.querySelectorAll(".mark").forEach(input => input.value = "");
+    }
+  </script>
+</body>
+</html>
